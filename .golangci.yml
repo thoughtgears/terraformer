@@ -1,0 +1,13 @@
+linters:
+  enable:
+    - revive
+    - govet
+    - errcheck
+    - gofmt
+    - gosec
+    - unused
+    - whitespace
+    - staticcheck
+run:
+  tests: false
+  issues-exit-code: 1

@@ -2,7 +2,6 @@ package main
 
 import (
 	"flag"
-	"fmt"
 	"os"
 
 	"github.com/thoughtgears/terraformer/pkg/terraform"
@@ -13,6 +12,7 @@ import (
 func main() {
 	fileName := flag.String("file", "input.yaml", "Name of file to terraform - default: input.yaml")
 	fileType := flag.String("type", "yaml", "Type of file to terraform - default: yaml")
+	outputDir := flag.String("output", "./", "Output directory for terraform files - default: current directory")
 	flag.Parse()
 
 	f, err := os.ReadFile(*fileName)
@@ -25,6 +25,7 @@ func main() {
 		log.Fatal().Err(err).Msg("error parsing file")
 	}
 
-	fmt.Println(*t)
-
+	if err := t.Generate(*outputDir); err != nil {
+		log.Fatal().Err(err).Msg("error generating terraform files")
+	}
 }

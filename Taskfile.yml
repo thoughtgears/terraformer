@@ -1,0 +1,43 @@
+  version: 3
+
+  dotenv: [ '.env', '{{.ENV}}/.env.', '{{.HOME}}/.env' ]
+
+  # Dynamic variables for the task runners
+  vars:
+    GIT_SHORT_SHA:
+      sh: git rev-parse --short HEAD
+    GIT_REPO:
+      sh: git config --get remote.origin.url | sed -e 's#^.*:##' -e 's#.git$##' -e 's#//github.com/*##'
+    GIT_REPO_NAME:
+      sh: echo {{.GIT_REPO}} | sed -e 's#^.*/##'
+    GIT_OWNER:
+      sh: echo {{.GIT_REPO}} | sed -e 's#/.*$##'
+    GO_VERSION:
+      sh: go version | awk '{ print $3 }' | sed s/go//
+    SERVICE_NAME: terraformer
+    VERSION: 0.0.1
+
+  tasks:
+    default:
+      cmds:
+        - task --list
+
+    lint:
+      desc: Run linters against the go code
+      cmds:
+        - golangci-lint run
+      silent: true
+
+    test:
+      desc: Run unit tests
+      cmds:
+        - go test -v ./...
+
+    build:
+      desc: 'Builds the application as a binary file'
+      cmds:
+        - rm -rf builds
+        - CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -a -installsuffix cgo -ldflags="-X 'main.Version={{.VERSION}}' -X 'main.Revision={{.GIT_SHORT_SHA}}'" -o builds/{{.SERVICE_NAME}}-linux-amd64
+        - CGO_ENABLED=0 GOOS=darwin GOARCH=amd64 go build -a -installsuffix cgo -ldflags="-X 'main.Version={{.VERSION}}' -X 'main.Revision={{.GIT_SHORT_SHA}}'" -o builds/{{.SERVICE_NAME}}-darwin-amd64
+        - CGO_ENABLED=0 GOOS=darwin GOARCH=arm64 go build -a -installsuffix cgo -ldflags="-X 'main.Version={{.VERSION}}' -X 'main.Revision={{.GIT_SHORT_SHA}}'" -o builds/{{.SERVICE_NAME}}-darwin-arm64
+        - CGO_ENABLED=0 GOOS=windows GOARCH=amd64 go build -a -installsuffix cgo -ldflags="-X 'main.Version={{.VERSION}}' -X 'main.Revision={{.GIT_SHORT_SHA}}'" -o builds/{{.SERVICE_NAME}}-win-amd64.exe

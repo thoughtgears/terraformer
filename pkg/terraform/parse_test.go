@@ -10,31 +10,34 @@ import (
 
 func TestParseYaml(t *testing.T) {
 	data := `
-organisation: test-org
-workspace: test-workspace
-terraformVersion: 1.3.0
-region: europe-west1
-name: test-project
-description: this is a test project
-projectId: test-123456
-modules:
-- name: test-module1
-  description: this is a test module
-  version: v1.0.0
-- name: test-module2
-  description: this is a test module
-  version: v2.0.0
+general:
+  organisation: test-org
+  workspace: test-workspace
+  terraformVersion: 1.3.0
+  region: europe-west1
+  projectId: test-123456
+service:
+  name: test-project
+  description: this is a test project
+  modules:
+  - name: test-module1
+    description: this is a test module
+    version: v1.0.0
+  - name: test-module2
+    description: this is a test module
+    version: v2.0.0
 `
 	tf, err := terraform.Parse("yaml", []byte(data))
 
 	assert.NoError(t, err)
-	assert.Equal(t, "test-org", tf.Organisation)
-	assert.Equal(t, "test-workspace", tf.Workspace)
-	assert.Equal(t, "1.3.0", tf.TerraformVersion)
-	assert.Equal(t, "europe-west1", tf.Region)
-	assert.Equal(t, "test-project", tf.Name)
-	assert.Equal(t, "this is a test project", tf.Description)
-	assert.Equal(t, "test-123456", tf.ProjectID)
+	assert.Equal(t, "test-org", tf.General.Organisation)
+	assert.Equal(t, "test-workspace", tf.General.Workspace)
+	assert.Equal(t, "1.3.0", tf.General.TerraformVersion)
+	assert.Equal(t, "europe-west1", tf.General.Region)
+	assert.Equal(t, "test-123456", tf.General.ProjectID)
+	assert.Equal(t, "test-project", tf.Service.Name)
+	assert.Equal(t, "this is a test project", tf.Service.Description)
+
 	assert.Equal(t, []terraform.Module{
 		{
 			Name:        "test-module1",
@@ -46,43 +49,48 @@ modules:
 			Version:     "v2.0.0",
 		},
 	},
-		tf.Modules)
+		tf.Service.Modules)
 }
 
 func TestParseJson(t *testing.T) {
 	data := `
 {
-	"organisation": "test-org",
-	"workspace": "test-workspace",
-	"terraformVersion": "1.3.0",
-	"region": "europe-west1",
-	"name": "test-project",
-	"description": "this is a test project",
-	"projectId": "test-123456",
-	"modules": [
-    {
-      "name": "test-module1",
-      "description": "this is a test module",
-      "version": "v1.0.0"
-    },
-    {
-      "name": "test-module2",
-      "description": "this is a test module",
-      "version": "v2.0.0"
-    }
-	]
+  "general":{
+    "organisation":"test-org",
+    "workspace":"test-workspace",
+    "terraformVersion":"1.3.0",
+    "region":"europe-west1",
+    "projectId":"test-123456"
+  },
+  "service":{
+    "name":"test-project",
+    "description":"this is a test project",
+    "modules":[
+      {
+        "name":"test-module1",
+        "description":"this is a test module",
+        "version":"v1.0.0"
+      },
+      {
+        "name":"test-module2",
+        "description":"this is a test module",
+        "version":"v2.0.0"
+      }
+    ]
+  }
 }
 `
 	tf, err := terraform.Parse("json", []byte(data))
 
 	assert.NoError(t, err)
-	assert.Equal(t, "test-org", tf.Organisation)
-	assert.Equal(t, "test-workspace", tf.Workspace)
-	assert.Equal(t, "1.3.0", tf.TerraformVersion)
-	assert.Equal(t, "europe-west1", tf.Region)
-	assert.Equal(t, "test-project", tf.Name)
-	assert.Equal(t, "this is a test project", tf.Description)
-	assert.Equal(t, "test-123456", tf.ProjectID)
+	assert.Equal(t, "test-org", tf.General.Organisation)
+	assert.Equal(t, "test-workspace", tf.General.Workspace)
+	assert.Equal(t, "1.3.0", tf.General.TerraformVersion)
+	assert.Equal(t, "europe-west1", tf.General.Region)
+	assert.Equal(t, "test-123456", tf.General.ProjectID)
+	assert.Equal(t, "test-project", tf.Service.Name)
+	assert.Equal(t, "this is a test project", tf.Service.Description)
+
 	assert.Equal(t, []terraform.Module{
 		{
 			Name:        "test-module1",
@@ -93,7 +101,8 @@ func TestParseJson(t *testing.T) {
 			Description: "this is a test module",
 			Version:     "v2.0.0",
 		},
-	}, tf.Modules)
+	},
+		tf.Service.Modules)
 }
 
 func TestParseErrorFileFormat(t *testing.T) {
@@ -112,5 +121,5 @@ projectId: test-123456
 	_, err := terraform.Parse("yaml", []byte(data))
 
 	assert.Error(t, err)
-	assert.Equal(t, "field error: Name, rule: required\n", err.Error())
+	assert.Equal(t, "field error: TerraformVersion, rule: required", err.Error())
 }

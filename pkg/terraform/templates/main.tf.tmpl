@@ -1,20 +1,21 @@
 terraform {
+  {{ if and (not (eq .General.Organization "")) (not (eq .General.Organization "")) }}
   cloud {
-    organization = {{ .Organization }}
+      organization = {{ .General.Organization }}
 
-    workspaces {
-      name = {{ .Workspace }}
+      workspaces {
+        name = {{ .General.Workspace }}
+      }
     }
-  }
-
+  {{end}}
   required_version = "~> {{.TerraformVersion}}"
 }
 
 locals {
-    project_id = "{{ .ProjectID }}"
-    region = "{{ .Region }}"
-    name = "{{ .Name }}"
-    description = "{{ .Description }}"
+    project_id = "{{ .General.ProjectID }}"
+    region = "{{ .General.Region }}"
+    name = "{{ .Service.Name }}"
+    description = "{{ .Service.Description }}"
 }
 
 data "google_project" "this" {

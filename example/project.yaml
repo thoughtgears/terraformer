@@ -1,0 +1,19 @@
+# General project configuration
+general:
+  organisation: my-org
+  workspace: my-workspace
+  terraformVersion: 1.5.3
+  region: europe-west1
+  projectId: my-project-12345
+
+# Service configuration
+service:
+  name: my-service-name
+  description: My service description
+  modules:
+    - name: module1
+      description: My module description
+      version: 1.0.0
+    - name: module2
+      description: My module description
+      version: 1.0.0

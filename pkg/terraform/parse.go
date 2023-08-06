@@ -11,16 +11,36 @@ import (
 // Terraform is the struct that will be used to parse the terraform file.
 // Should contain all the information needed to generate terraform code.
 type Terraform struct {
-	Organisation     string   `yaml:"organisation" json:"organisation" validate:"required"`
-	Workspace        string   `yaml:"workspace" json:"workspace" validate:"required"`
-	TerraformVersion string   `yaml:"terraformVersion" json:"terraformVersion" validate:"required"`
-	Region           string   `yaml:"region" json:"region" validate:"required"`
-	Name             string   `yaml:"name" json:"name" validate:"required"`
-	Description      string   `yaml:"description,omitempty" json:"description,omitempty"`
-	ProjectID        string   `yaml:"projectId" json:"projectId" validate:"required"`
-	Modules          []Module `yaml:"modules,omitempty" json:"modules,omitempty"`
+	General General `yaml:"general" json:"general"`
+	Service Service `yaml:"service" json:"service"`
 }
 
+// General contains general information about the terraform project.
+// This information is used to generate the main.tf file.
+// Organisation and Workspace are optional. If they are not provided, it will not connect to a remote state.
+// TerraformVersion, Region and ProjectID are required.
+type General struct {
+	Organisation     string `yaml:"organisation,omitempty" json:"organisation,omitempty"`
+	Workspace        string `yaml:"workspace,omitempty" json:"workspace,omitempty"`
+	TerraformVersion string `yaml:"terraformVersion" json:"terraformVersion" validate:"required"`
+	Region           string `yaml:"region" json:"region" validate:"required"`
+	ProjectID        string `yaml:"projectId" json:"projectId" validate:"required"`
+}
+
+// Service contains information about the service.
+// This information is used to generate the information across the files.
+// Name is required.
+// Description and Modules is optional.
+type Service struct {
+	Name        string   `yaml:"name" json:"name" validate:"required"`
+	Description string   `yaml:"description,omitempty" json:"description,omitempty"`
+	Modules     []Module `yaml:"modules,omitempty" json:"modules,omitempty"`
+}
+
+// Module contains information about the module.
+// This information is used to generate the information across the module files.
+// Name and Version are required.
+// Description is optional.
 type Module struct {
 	Name        string `yaml:"name" json:"name" validate:"required"`
 	Description string `yaml:"description,omitempty" json:"description,omitempty"`
@@ -51,7 +71,7 @@ func Parse(fileType string, data []byte) (*Terraform, error) {
 	if err := validate.Struct(t); err != nil {
 		if validationErrors, ok := err.(validator.ValidationErrors); ok {
 			for _, e := range validationErrors {
-				return nil, fmt.Errorf("field error: %s, rule: %s\n", e.Field(), e.ActualTag())
+				return nil, fmt.Errorf("field error: %s, rule: %s", e.Field(), e.ActualTag())
 			}
 		} else {
 			return nil, fmt.Errorf("error validating terraform struct: %w", err)
