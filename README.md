@@ -20,3 +20,10 @@ task build
 ```
 
 You can also run with `go run main.go` if you have go installed.
+
+## Why its created?
+
+I created this application to show how you can create a simple interface for developers to create
+their infrastructure without having to know the ins and outs of terraform. It also allows you to
+create a standard for your infrastructure. You should use this code as a reference to build and 
+extend it to your needs. 
