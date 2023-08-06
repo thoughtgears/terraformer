@@ -1,0 +1,7 @@
+module {{.Name}} {
+  source = "git::ssh://github.com/terraform//{{.Name}}.git?ref={{.Version}}"
+
+  name = "{{.Name}}"
+  description = "{{.Description}}"
+}
+`

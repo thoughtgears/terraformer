@@ -1,0 +1,22 @@
+terraform {
+  cloud {
+    organization = {{ .Organization }}
+
+    workspaces {
+      name = {{ .Workspace }}
+    }
+  }
+
+  required_version = "~> {{.TerraformVersion}}"
+}
+
+locals {
+    project_id = "{{ .ProjectID }}"
+    region = "{{ .Region }}"
+    name = "{{ .Name }}"
+    description = "{{ .Description }}"
+}
+
+data "google_project" "this" {
+  project_id = local.project_id
+}
