@@ -1,14 +1,12 @@
-terraform {
-  {{ if and (not (eq .General.Organization "")) (not (eq .General.Organization "")) }}
+terraform { {{ if and (not (eq .General.Organisation "")) (not (eq .General.Organisation "")) }}
   cloud {
-      organization = {{ .General.Organization }}
+      organization = {{ .General.Organisation }}
 
       workspaces {
         name = {{ .General.Workspace }}
       }
-    }
-  {{end}}
-  required_version = "~> {{.TerraformVersion}}"
+    } {{end}}
+  required_version = "~> {{.General.TerraformVersion}}"
 }
 
 locals {

@@ -20,12 +20,21 @@ func main() {
 		log.Fatal().Err(err).Msg("error reading file")
 	}
 
-	t, err := terraform.Parse(*fileType, f)
+	tf, err := terraform.Parse(*fileType, f)
 	if err != nil {
 		log.Fatal().Err(err).Msg("error parsing file")
 	}
 
-	if err := t.Generate(*outputDir); err != nil {
+	if err := tf.Generate(*outputDir); err != nil {
 		log.Fatal().Err(err).Msg("error generating terraform files")
+	}
+
+	client, err := terraform.NewClient(tf, *outputDir)
+	if err != nil {
+		log.Fatal().Err(err).Msg("error creating terraform client")
+	}
+
+	if err := client.Format(); err != nil {
+		log.Fatal().Err(err).Msg("error formatting terraform files")
 	}
 }

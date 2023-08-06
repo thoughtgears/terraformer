@@ -30,7 +30,6 @@ func (t *Terraform) Generate(outputDir string) error {
 }
 
 func generateAndOutput(input, output string, data interface{}) error {
-	fmt.Println(data)
 	templateFile, err := content.ReadFile(fmt.Sprintf("templates/%s.tf.tmpl", input))
 	if err != nil {
 		return fmt.Errorf("error reading template: %w", err)

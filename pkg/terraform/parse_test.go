@@ -21,9 +21,11 @@ service:
   description: this is a test project
   modules:
   - name: test-module1
+    organisation: test-org
     description: this is a test module
     version: v1.0.0
   - name: test-module2
+    organisation: test-org
     description: this is a test module
     version: v2.0.0
 `
@@ -68,11 +70,13 @@ func TestParseJson(t *testing.T) {
     "modules":[
       {
         "name":"test-module1",
+		"organisation":"test-org",
         "description":"this is a test module",
         "version":"v1.0.0"
       },
       {
         "name":"test-module2",
+		"organisation":"test-org",
         "description":"this is a test module",
         "version":"v2.0.0"
       }

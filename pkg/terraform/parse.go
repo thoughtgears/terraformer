@@ -42,9 +42,10 @@ type Service struct {
 // Name and Version are required.
 // Description is optional.
 type Module struct {
-	Name        string `yaml:"name" json:"name" validate:"required"`
-	Description string `yaml:"description,omitempty" json:"description,omitempty"`
-	Version     string `yaml:"version" json:"version" validate:"required"`
+	Name            string `yaml:"name" json:"name" validate:"required"`
+	GitOrganisation string `yaml:"organisation" json:"organisation" validate:"required"`
+	Description     string `yaml:"description,omitempty" json:"description,omitempty"`
+	Version         string `yaml:"version" json:"version" validate:"required"`
 }
 
 // Parse will parse data into a Terraform struct.
@@ -54,7 +55,6 @@ type Module struct {
 // The data is not valid if it does not match the Terraform struct validation rules.
 func Parse(fileType string, data []byte) (*Terraform, error) {
 	var t Terraform
-
 	if fileType == "yaml" {
 		if err := yaml.Unmarshal(data, &t); err != nil {
 			return nil, fmt.Errorf("error unmarshalling yaml: %w", err)
